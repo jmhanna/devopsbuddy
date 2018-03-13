@@ -1,0 +1,29 @@
+package com.devopsbuddy.backend.service;
+
+import com.devopsbuddy.web.domain.frontend.FeedbackPojo;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+
+/**
+ * Created by j_mha on 3/12/2018.
+ */
+public abstract class AbstractEmailService implements EmailService{
+
+    @Value("${default.to.address}")
+    private String defaultToAddress;
+
+    protected SimpleMailMessage prepareSimpleMailMessageFromFeeedbackPojo(FeedbackPojo feedback){
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(defaultToAddress);
+        message.setFrom(feedback.getEmail());
+        message.setSubject("[DevOps Buddy]: Feedback received from "+feedback.getFirstName()+" ");
+        message.setText(feedback.getFeedback());
+        return message;
+    }
+
+    @Override
+    public void sendFeedbackEmail(FeedbackPojo feedbackPojo){
+        sendGenericEmailMessage(prepareSimpleMailMessageFromFeeedbackPojo(feedbackPojo));
+    }
+
+}
